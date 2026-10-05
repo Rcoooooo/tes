@@ -35,6 +35,7 @@ input,select{
 }
 input:focus,select:focus{border-color:#a855f7;box-shadow:0 0 0 3px rgba(168,85,247,.12)}
 .form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.date-grid{display:grid;grid-template-columns:.7fr 1.3fr 1fr;gap:7px}
 .field{margin-bottom:12px}
 .item-row{display:grid;grid-template-columns:1.5fr .55fr auto;gap:9px;align-items:end}
 button{
@@ -129,7 +130,12 @@ button:disabled{opacity:.5;cursor:not-allowed}
         </div>
         <div class="field">
             <label>Tanggal</label>
-            <input id="date" type="date">
+            <div class="date-grid">
+                <select id="dateDay"></select>
+                <select id="dateMonth"></select>
+                <select id="dateYear"></select>
+            </div>
+            <input id="date" type="hidden">
         </div>
     </div>
 
@@ -241,15 +247,25 @@ const rupiah = n => new Intl.NumberFormat("id-ID",{
 
 function today(){
     const d = new Date();
-    d.setMinutes(d.getMinutes()-d.getTimezoneOffset());
-    return d.toISOString().slice(0,10);
+    return {day:d.getDate(),month:d.getMonth()+1,year:d.getFullYear()};
 }
 
-function init(){
-    document.getElementById("date").value = today();
-    populateItems();
-    renderCart();
-    renderHistory();
+function populateDateDropdowns(){
+    const day=document.getElementById("dateDay"), month=document.getElementById("dateMonth"), year=document.getElementById("dateYear");
+    const months=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
+    day.innerHTML=Array.from({length:31},(_,i)=>`<option value="${i+1}">${i+1}</option>`).join("");
+    month.innerHTML=months.map((m,i)=>`<option value="${i+1}">${m}</option>`).join("");
+    const current=new Date().getFullYear();
+    year.innerHTML=Array.from({length:21},(_,i)=>`<option value="${current-10+i}">${current-10+i}</option>`).join("");
+    const t=today(); day.value=t.day; month.value=t.month; year.value=t.year; updateDateValue();
+    day.onchange=updateDateValue; month.onchange=updateDateValue; year.onchange=updateDateValue;
+}
+
+function updateDateValue(){
+    const d=String(document.getElementById("dateDay").value).padStart(2,"0");
+    const m=String(document.getElementById("dateMonth").value).padStart(2,"0");
+    const y=document.getElementById("dateYear").value;
+    document.getElementById("date").value=`${y}-${m}-${d}`;
 }
 
 function populateItems(){
@@ -316,7 +332,8 @@ async function saveTransaction(){
     }
 
     const cashier = document.getElementById("cashier").value.trim() || "Tanpa Nama";
-    const date = document.getElementById("date").value || today();
+    updateDateValue();
+    const date = document.getElementById("date").value;
     const group = document.getElementById("group").value || "-";
     const note = document.getElementById("note").value.trim() || "-";
     const total = cart.reduce((s,x)=>s+x.qty*x.price,0);
