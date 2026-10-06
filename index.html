@@ -3,526 +3,392 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Expense Calculator</title>
+<title>Brankas Inventory</title>
 <style>
 @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
 *{box-sizing:border-box}
+:root{
+  --bg:#09070d;--card:rgba(24,14,34,.92);--card2:rgba(35,20,48,.8);
+  --line:rgba(216,180,254,.15);--text:#f7efff;--muted:#b8a9c5;
+  --purple:#a855f7;--purple2:#7e22ce;--green:#4ade80;--red:#fb7185;
+  --yellow:#facc15;--blue:#60a5fa;
+}
 body{
-    margin:0;
-    font-family:Poppins,Arial,sans-serif;
-    color:#fff;
-    background:radial-gradient(circle at top,#35105a 0%,#160820 45%,#07070c 100%);
-    min-height:100vh;
-    padding:28px 16px;
+ margin:0;font-family:Poppins,Arial,sans-serif;color:var(--text);
+ background:radial-gradient(circle at top,#35105a 0%,#160820 38%,#07070c 100%);
+ min-height:100vh;
 }
-.container{max-width:1150px;margin:auto}
-header{text-align:center;margin-bottom:25px}
-header h1{margin:0;color:#f5d0fe;font-size:clamp(28px,5vw,48px)}
-header p{margin:6px 0;color:#cbb9d5}
-.grid{display:grid;grid-template-columns:1.1fr .9fr;gap:18px}
+.container{width:min(1400px,94%);margin:auto;padding:28px 0 50px}
+header{text-align:center;margin-bottom:24px}
+h1{margin:0;color:#f5d0fe;font-size:clamp(28px,4vw,48px)}
+.subtitle{color:var(--muted);margin-top:7px;font-size:14px}
+.grid{display:grid;grid-template-columns:380px 1fr;gap:18px}
 .card{
-    background:rgba(18,10,29,.88);
-    border:1px solid rgba(192,132,252,.2);
-    border-radius:18px;
-    padding:20px;
-    box-shadow:0 15px 45px rgba(0,0,0,.3);
+ background:var(--card);border:1px solid var(--line);border-radius:18px;
+ padding:20px;box-shadow:0 18px 50px rgba(0,0,0,.25);backdrop-filter:blur(12px)
 }
-.card h2{margin:0 0 16px;font-size:20px;color:#e9c8ff}
-label{display:block;font-size:13px;color:#cbb9d5;margin-bottom:6px}
-input,select{
-    width:100%;border:1px solid #43205c;background:#110b18;color:#fff;
-    padding:12px 13px;border-radius:10px;outline:none;font-family:inherit
+.card h2{font-size:18px;margin:0 0 16px;color:#ead5ff}
+.form-group{margin-bottom:13px}
+label{display:block;font-size:12px;color:var(--muted);margin-bottom:6px}
+input,select,button{
+ width:100%;border:1px solid var(--line);border-radius:11px;
+ padding:11px 12px;font:inherit;color:var(--text);background:#120c18;outline:none
 }
-input:focus,select:focus{border-color:#a855f7;box-shadow:0 0 0 3px rgba(168,85,247,.12)}
-.form-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
-.date-grid{display:grid;grid-template-columns:.7fr 1.3fr 1fr;gap:7px}
-.field{margin-bottom:12px}
-.item-row{display:grid;grid-template-columns:1.5fr .55fr auto;gap:9px;align-items:end}
-button{
-    border:0;border-radius:10px;padding:11px 15px;font-family:inherit;
-    font-weight:600;cursor:pointer;transition:.18s
+input:focus,select:focus{border-color:var(--purple);box-shadow:0 0 0 3px rgba(168,85,247,.12)}
+select option{background:#160d1e}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+button{cursor:pointer;font-weight:600;transition:.18s}
+button:hover{transform:translateY(-1px);filter:brightness(1.08)}
+.btn-primary{background:linear-gradient(135deg,var(--purple),var(--purple2));border:0}
+.btn-in{background:rgba(74,222,128,.13);border-color:rgba(74,222,128,.35);color:#bbf7d0}
+.btn-out{background:rgba(251,113,133,.13);border-color:rgba(251,113,133,.35);color:#fecdd3}
+.btn-secondary{background:#21152b}
+.btn-danger{background:rgba(239,68,68,.12);color:#fecaca;border-color:rgba(239,68,68,.25)}
+.stock-preview{
+ padding:13px;border-radius:12px;background:rgba(168,85,247,.08);
+ border:1px solid rgba(168,85,247,.18);margin:12px 0;font-size:13px
 }
-.btn-primary{background:linear-gradient(135deg,#a855f7,#7e22ce);color:#fff}
-.btn-primary:hover{transform:translateY(-1px);filter:brightness(1.08)}
-.btn-secondary{background:#261431;color:#e9c8ff;border:1px solid #4a2461}
-.btn-danger{background:#451522;color:#ffb8c5}
-button:disabled{opacity:.5;cursor:not-allowed}
-.items{margin-top:16px}
-.empty{text-align:center;padding:22px;color:#8f7c99;border:1px dashed #392445;border-radius:12px}
-.line{
-    display:flex;justify-content:space-between;gap:12px;align-items:center;
-    background:#110b18;border:1px solid #2c1939;border-radius:11px;padding:12px;margin-bottom:8px
-}
-.line-info strong{display:block;font-size:14px}
-.line-info span{font-size:12px;color:#9e8ca7}
-.line-total{font-weight:700;color:#d8a8ff;white-space:nowrap}
-.total-box{
-    margin-top:16px;padding:17px;border-radius:13px;
-    background:linear-gradient(135deg,rgba(126,34,206,.25),rgba(168,85,247,.08));
-    border:1px solid rgba(168,85,247,.3)
-}
-.total-line{display:flex;justify-content:space-between;align-items:center}
-.total-value{font-size:25px;font-weight:700;color:#f0c8ff}
-.actions{display:flex;gap:9px;margin-top:12px}
-.actions button{flex:1}
-.stats{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
-.stat{padding:13px;border-radius:12px;background:#110b18;border:1px solid #2c1939}
-.stat small{color:#9987a4;display:block;font-size:11px}
-.stat b{font-size:18px;color:#e9c8ff}
-.history{margin-top:18px}
-.history-tools{display:flex;gap:8px;margin-bottom:12px}
-.history-list{max-height:500px;overflow:auto;padding-right:2px}
-.history-card{background:#110b18;border:1px solid #2c1939;border-radius:13px;padding:14px;margin-bottom:10px}
-.history-top{display:flex;justify-content:space-between;gap:10px}
-.history-name{font-weight:700}
-.history-date{font-size:11px;color:#9b89a4}
-.history-total{font-weight:700;color:#d8a8ff}
-.history-meta{font-size:12px;color:#a998b2;margin:6px 0}
-.history-items{font-size:12px;color:#cbb9d5;white-space:pre-line}
-.history-actions{display:flex;gap:7px;margin-top:10px}
-.history-actions button{font-size:11px;padding:8px 10px}
-.modal{
-    position:fixed;inset:0;background:rgba(0,0,0,.7);display:none;
-    align-items:center;justify-content:center;padding:16px;z-index:20
-}
-.modal.show{display:flex}
-.modal-box{max-width:600px;width:100%;max-height:80vh;overflow:auto;background:#140b1d;border:1px solid #4b2660;border-radius:16px;padding:20px}
-.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px}
-.modal-head h3{margin:0;color:#edccff}
-.close{background:#321b3e;color:#fff}
-.item-table{width:100%;border-collapse:collapse}
-.item-table th,.item-table td{text-align:left;padding:9px;border-bottom:1px solid #2d1a38;font-size:12px}
-.item-table th{color:#c9a7d8}
-.toast{
-    position:fixed;right:18px;bottom:18px;background:#21122c;border:1px solid #61327d;
-    padding:12px 16px;border-radius:10px;display:none;z-index:30
-}
-.toast.show{display:block}
-@media(max-width:800px){
-    .grid{grid-template-columns:1fr}
-}
-@media(max-width:520px){
-    body{padding:18px 10px}
-    .card{padding:15px}
-    .form-grid{grid-template-columns:1fr}
-    .item-row{grid-template-columns:1fr 80px}
-    .item-row button{grid-column:1/-1}
-    .stats{grid-template-columns:1fr}
-    .actions{flex-direction:column}
-}
+.stock-preview strong{color:#e9d5ff}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:18px}
+.stat{background:var(--card);border:1px solid var(--line);border-radius:16px;padding:16px}
+.stat .label{margin:0 0 5px}
+.stat .value{font-size:25px;font-weight:700}
+.stat:nth-child(1) .value{color:#c4b5fd}.stat:nth-child(2) .value{color:var(--green)}
+.stat:nth-child(3) .value{color:var(--red)}.stat:nth-child(4) .value{color:#f5d0fe}
+.toolbar{display:grid;grid-template-columns:1.5fr 1fr 1fr 1fr;gap:10px;margin-bottom:15px}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:14px}
+table{width:100%;border-collapse:collapse;min-width:800px}
+th,td{padding:12px 13px;text-align:left;border-bottom:1px solid var(--line);font-size:13px}
+th{background:#1b1024;color:#d8b4fe;position:sticky;top:0;z-index:1}
+tr:hover td{background:rgba(168,85,247,.04)}
+.badge{display:inline-flex;padding:4px 9px;border-radius:999px;font-size:11px;font-weight:700}
+.badge-in{background:rgba(74,222,128,.12);color:#86efac}
+.badge-out{background:rgba(251,113,133,.12);color:#fda4af}
+.amount{font-weight:700}
+.amount.in{color:var(--green)}.amount.out{color:var(--red)}
+.empty{text-align:center;padding:35px;color:var(--muted)}
+.item-table td:nth-child(n+2){text-align:right}.item-table th:nth-child(n+2){text-align:right}
+.section-title{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:15px}
+.section-title h2{margin:0}
+.small{font-size:11px;color:var(--muted)}
+.actions{display:flex;gap:8px}.actions button{width:auto;padding:7px 10px;font-size:11px}
+.item-name{font-weight:600}.category{font-size:10px;color:var(--muted);margin-top:2px}
+.negative{color:var(--red)!important}
+.notice{font-size:11px;color:var(--muted);line-height:1.6;margin-top:10px}
+footer{text-align:center;color:#756681;font-size:11px;margin-top:20px}
+@media(max-width:1050px){.grid{grid-template-columns:1fr}.stats{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:700px){.container{width:95%;padding-top:18px}.row,.toolbar{grid-template-columns:1fr}.stats{grid-template-columns:1fr 1fr}.stat .value{font-size:20px}}
 </style>
 </head>
 <body>
 <div class="container">
 <header>
-    <h1>Expense Calculator</h1>
-    <p>Pencatatan pengeluaran & history transaksi</p>
+  <h1>BRANKAS INVENTORY</h1>
+  <div class="subtitle">Pencatatan pemasukan, pengeluaran & stok barang</div>
 </header>
 
 <div class="grid">
-<section class="card">
-    <h2>🧮 Buat Pengeluaran</h2>
-
-    <div class="form-grid">
-        <div class="field">
-            <label>Nama Pencatat</label>
-            <input id="cashier" placeholder="Masukkan nama">
-        </div>
-        <div class="field">
-            <label>Tanggal</label>
-            <div class="date-grid">
-                <select id="dateDay"></select>
-                <select id="dateMonth"></select>
-                <select id="dateYear"></select>
-            </div>
-            <input id="date" type="hidden">
-        </div>
+  <div>
+    <div class="card">
+      <h2>📝 Transaksi Barang</h2>
+      <div class="form-group">
+        <label>Tanggal</label>
+        <input type="date" id="transactionDate">
+      </div>
+      <div class="form-group">
+        <label>Barang</label>
+        <select id="itemSelect"></select>
+      </div>
+      <div class="stock-preview">
+        Stok awal: <strong id="previewInitial">0</strong><br>
+        Stok saat ini: <strong id="previewCurrent">0</strong>
+      </div>
+      <div class="form-group">
+        <label>Jumlah</label>
+        <input type="number" id="quantity" min="1" step="1" placeholder="Masukkan jumlah">
+      </div>
+      <div class="form-group">
+        <label>Keterangan (opsional)</label>
+        <input type="text" id="note" maxlength="100" placeholder="Contoh: Restock / digunakan">
+      </div>
+      <div class="row">
+        <button class="btn-in" id="btnIn">＋ Pemasukan</button>
+        <button class="btn-out" id="btnOut">－ Pengeluaran</button>
+      </div>
+      <div class="notice">Semua transaksi otomatis tersimpan di browser menggunakan LocalStorage.</div>
     </div>
 
-    <div class="field">
-        <label>Nama Kelompok</label>
-        <select id="group">
-            <option value="">Pilih kelompok</option>
-            <option value="GRMC">GRMC</option>
-            <option value="ESG">ESG</option>
-            <option value="BNB">BNB</option>
-            <option value="WBP">WBP</option>
-            <option value="BSF">BSF</option>
-        </select>
+    <div class="card" style="margin-top:18px">
+      <h2>⚙️ Data</h2>
+      <div class="row">
+        <button class="btn-secondary" id="exportBtn">⬇ Export CSV</button>
+        <button class="btn-danger" id="resetBtn">↺ Reset Data</button>
+      </div>
+      <div class="notice">Reset akan menghapus seluruh riwayat transaksi dan mengembalikan stok ke stok awal bawaan.</div>
     </div>
+  </div>
 
-    <div class="field">
-        <label>Keterangan</label>
-        <input id="note" placeholder="Contoh: Restock barang">
-    </div>
-
-    <div class="item-row">
-        <div>
-            <label>Item</label>
-            <select id="itemSelect"></select>
-        </div>
-        <div>
-            <label>Jumlah</label>
-            <input id="qty" type="number" min="1" value="1">
-        </div>
-        <button class="btn-primary" onclick="addItem()">+ Tambah</button>
-    </div>
-
-    <div class="items" id="cart"></div>
-
-    <div class="total-box">
-        <div class="total-line">
-            <span>Total Pengeluaran</span>
-            <span class="total-value" id="grandTotal">Rp 0</span>
-        </div>
-    </div>
-
-    <div class="actions">
-        <button class="btn-primary" onclick="saveTransaction()">💾 Simpan Pengeluaran</button>
-        <button class="btn-secondary" onclick="clearCart()">↻ Reset</button>
-    </div>
-</section>
-
-<section class="card">
-    <h2>📊 Ringkasan</h2>
+  <div>
     <div class="stats">
-        <div class="stat"><small>TRANSAKSI</small><b id="statTransactions">0</b></div>
-        <div class="stat"><small>ITEM TERPAKAI</small><b id="statItems">0</b></div>
-        <div class="stat"><small>TOTAL</small><b id="statTotal">Rp 0</b></div>
+      <div class="stat"><div class="label">Total Stok Awal</div><div class="value" id="statInitial">0</div></div>
+      <div class="stat"><div class="label">Total Pemasukan</div><div class="value" id="statIn">0</div></div>
+      <div class="stat"><div class="label">Total Pengeluaran</div><div class="value" id="statOut">0</div></div>
+      <div class="stat"><div class="label">Total Stok Akhir</div><div class="value" id="statFinal">0</div></div>
     </div>
 
-    <div class="history">
-        <h2>📜 History Pengeluaran</h2>
-        <div class="history-tools">
-            <input id="historySearch" placeholder="Cari nama / keterangan / item..." oninput="renderHistory()">
-        </div>
-        <div class="history-list" id="historyList"></div>
+    <div class="card">
+      <div class="section-title">
+        <h2>📦 Rekap Stok</h2>
+        <span class="small" id="itemCount"></span>
+      </div>
+      <div class="toolbar">
+        <input id="searchStock" type="search" placeholder="🔎 Cari barang...">
+        <select id="categoryFilter">
+          <option value="">Semua kategori</option>
+          <option value="Barang">Barang</option>
+          <option value="Senjata">Senjata</option>
+        </select>
+        <input id="dateFrom" type="date" title="Dari tanggal">
+        <input id="dateTo" type="date" title="Sampai tanggal">
+      </div>
+      <div class="table-wrap">
+        <table class="item-table">
+          <thead>
+            <tr><th>Barang</th><th>Stok Awal</th><th>Masuk</th><th>Keluar</th><th>Stok Akhir</th></tr>
+          </thead>
+          <tbody id="stockBody"></tbody>
+        </table>
+      </div>
     </div>
-</section>
-</div>
-</div>
 
-<div class="modal" id="modal">
-    <div class="modal-box">
-        <div class="modal-head">
-            <h3>Detail Transaksi</h3>
-            <button class="close" onclick="closeModal()">✕</button>
-        </div>
-        <div id="modalContent"></div>
+    <div class="card" style="margin-top:18px">
+      <div class="section-title">
+        <h2>📜 Riwayat Transaksi</h2>
+        <span class="small" id="historyCount"></span>
+      </div>
+      <div class="toolbar">
+        <input id="searchHistory" type="search" placeholder="🔎 Cari barang / keterangan...">
+        <select id="typeFilter">
+          <option value="">Semua transaksi</option>
+          <option value="in">Pemasukan</option>
+          <option value="out">Pengeluaran</option>
+        </select>
+        <input id="historyFrom" type="date">
+        <input id="historyTo" type="date">
+      </div>
+      <div class="table-wrap">
+        <table>
+          <thead><tr><th>Tanggal</th><th>Barang</th><th>Jenis</th><th>Jumlah</th><th>Keterangan</th><th>Aksi</th></tr></thead>
+          <tbody id="historyBody"></tbody>
+        </table>
+      </div>
     </div>
+  </div>
 </div>
-
-<div class="toast" id="toast"></div>
+<footer>Brankas Inventory • Data tersimpan lokal pada perangkat ini</footer>
+</div>
 
 <script>
-// ==========================================================
-// DAFTAR ITEM & HARGA
-// Ubah bagian ini jika ingin mengganti nama/harga item.
-// ==========================================================
-const ITEMS = [
-    {name:"KECUBUNG", price:200000},
-    {name:"MICIN", price:200000},
-    {name:"VEST", price:200000},
-    {name:"COMPACT RIfle", price:3000000},
-    {name:"DOUBLE ACTION", price:1800000},
-    {name:"7.62x39", price:1000000},
-    {name:"GORILA", price:350000},
-    {name:"OPIUM", price:350000},
-    {name:"MOLOTOV", price:1000000}
+const INITIAL_STOCK = [
+  {id:"bibit-kecubung", name:"Bibit Kecubung", initial:641, category:"Barang"},
+  {id:"bibit-micin", name:"Bibit Micin", initial:15259, category:"Barang"},
+  {id:"kecubung", name:"Kecubung", initial:19671, category:"Barang"},
+  {id:"micin", name:"Micin", initial:18401, category:"Barang"},
+  {id:"opium", name:"Opium", initial:1417, category:"Barang"},
+  {id:"gorila", name:"Gorila", initial:984, category:"Barang"},
+  {id:"weed-pack", name:"Weed Pack", initial:540, category:"Barang"},
+  {id:"vest", name:"Vest", initial:300, category:"Barang"},
+  {id:"molotov", name:"Molotov", initial:216, category:"Barang"},
+  {id:"compact-rifle", name:"Compact Rifle", initial:80, category:"Senjata"},
+  {id:"double-action", name:"Double Action", initial:85, category:"Senjata"}
 ];
 
-const STORAGE_KEY = "expense_calculator_history_v1";
+const STORAGE_KEY = "brankas_inventory_v1";
+const DISCORD_WEBHOOK = "https://discord.com/api/webhooks/1556591010228867113/WrAt3qG2H6PSZ3vR4DPYs6aa9YgmUQzjOshHjayC8Ww4lrbTSgLm3AUTLVcswnh6O-OY";
+let transactions = loadTransactions();
 
-// ==========================================================
-// DISCORD WEBHOOK
-// Isi URL webhook Discord di bawah ini.
-// ==========================================================
-const DISCORD_WEBHOOK_URL = "https://discord.com/api/webhooks/1556591010228867113/WrAt3qG2H6PSZ3vR4DPYs6aa9YgmUQzjOshHjayC8Ww4lrbTSgLm3AUTLVcswnh6O-OY";
+function getDiscordWebhook(){ return DISCORD_WEBHOOK; }
 
-let cart = [];
 
-const rupiah = n => new Intl.NumberFormat("id-ID",{
-    style:"currency",currency:"IDR",maximumFractionDigits:0
-}).format(n);
+const $ = id => document.getElementById(id);
+const fmt = n => Number(n || 0).toLocaleString("id-ID");
+const today = () => new Date().toISOString().slice(0,10);
 
-function today(){
-    const d = new Date();
-    return {day:d.getDate(),month:d.getMonth()+1,year:d.getFullYear()};
+function loadTransactions(){
+  try{
+    const raw = localStorage.getItem(STORAGE_KEY);
+    const parsed = raw ? JSON.parse(raw) : [];
+    return Array.isArray(parsed) ? parsed : [];
+  }catch(e){ return []; }
 }
+function save(){ localStorage.setItem(STORAGE_KEY, JSON.stringify(transactions)); }
+function getItem(id){ return INITIAL_STOCK.find(x => x.id === id); }
 
-function populateDateDropdowns(){
-    const day=document.getElementById("dateDay"), month=document.getElementById("dateMonth"), year=document.getElementById("dateYear");
-    const months=["Januari","Februari","Maret","April","Mei","Juni","Juli","Agustus","September","Oktober","November","Desember"];
-    day.innerHTML=Array.from({length:31},(_,i)=>`<option value="${i+1}">${i+1}</option>`).join("");
-    month.innerHTML=months.map((m,i)=>`<option value="${i+1}">${m}</option>`).join("");
-    const current=new Date().getFullYear();
-    year.innerHTML=Array.from({length:21},(_,i)=>`<option value="${current-10+i}">${current-10+i}</option>`).join("");
-    const t=today(); day.value=t.day; month.value=t.month; year.value=t.year; updateDateValue();
-    day.onchange=updateDateValue; month.onchange=updateDateValue; year.onchange=updateDateValue;
+function stockTotals(itemId, from="", to=""){
+  let incoming=0, outgoing=0;
+  transactions.forEach(t=>{
+    if(t.itemId !== itemId) return;
+    if(from && t.date < from) return;
+    if(to && t.date > to) return;
+    if(t.type === "in") incoming += Number(t.qty);
+    else outgoing += Number(t.qty);
+  });
+  return {incoming, outgoing, final:getItem(itemId).initial + incoming - outgoing};
 }
-
-function updateDateValue(){
-    const d=String(document.getElementById("dateDay").value).padStart(2,"0");
-    const m=String(document.getElementById("dateMonth").value).padStart(2,"0");
-    const y=document.getElementById("dateYear").value;
-    document.getElementById("date").value=`${y}-${m}-${d}`;
+function currentStock(itemId){
+  return stockTotals(itemId).final;
 }
 
 function populateItems(){
-    const select = document.getElementById("itemSelect");
-    select.innerHTML = ITEMS.map((item,i)=>
-        `<option value="${i}">${escapeHtml(item.name)} — ${rupiah(item.price)}</option>`
-    ).join("");
+  $("itemSelect").innerHTML = INITIAL_STOCK.map(i =>
+    `<option value="${i.id}">${i.name} — stok ${fmt(currentStock(i.id))}</option>`
+  ).join("");
+  updatePreview();
+}
+function updatePreview(){
+  const item = getItem($("itemSelect").value);
+  if(!item) return;
+  $("previewInitial").textContent = fmt(item.initial);
+  $("previewCurrent").textContent = fmt(currentStock(item.id));
 }
 
-function addItem(){
-    const index = Number(document.getElementById("itemSelect").value);
-    const qty = Math.max(1, Number(document.getElementById("qty").value) || 1);
-    const item = ITEMS[index];
-    if(!item) return;
+function addTransaction(type){
+  const itemId = $("itemSelect").value;
+  const qty = Number($("quantity").value);
+  const date = $("transactionDate").value || today();
+  const note = $("note").value.trim();
+  const item = getItem(itemId);
 
-    const existing = cart.find(x => x.name === item.name);
-    if(existing) existing.qty += qty;
-    else cart.push({name:item.name, price:item.price, qty});
+  if(!item || !qty || qty <= 0){
+    alert("Pilih barang dan masukkan jumlah yang valid.");
+    return;
+  }
+  if(type === "out" && qty > currentStock(itemId)){
+    alert(`Stok ${item.name} tidak cukup. Stok tersedia: ${fmt(currentStock(itemId))}`);
+    return;
+  }
 
-    document.getElementById("qty").value = 1;
-    renderCart();
+  transactions.push({
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2),
+    date, itemId, type, qty, note
+  });
+  save();
+  $("quantity").value = "";
+  $("note").value = "";
+  renderAll();
+
+  // Kirim notifikasi setelah transaksi berhasil disimpan.
+  sendDiscordNotification(transactions[transactions.length - 1]);
+
+  alert(type === "in" ? "Pemasukan berhasil disimpan." : "Pengeluaran berhasil disimpan.");
 }
 
-function removeItem(index){
-    cart.splice(index,1);
-    renderCart();
+function renderStats(){
+  const totals = INITIAL_STOCK.reduce((a,item)=>{
+    const t=stockTotals(item.id);
+    a.initial += item.initial; a.in += t.incoming; a.out += t.outgoing; a.final += t.final;
+    return a;
+  },{initial:0,in:0,out:0,final:0});
+  $("statInitial").textContent=fmt(totals.initial);
+  $("statIn").textContent=fmt(totals.in);
+  $("statOut").textContent=fmt(totals.out);
+  $("statFinal").textContent=fmt(totals.final);
 }
 
-function renderCart(){
-    const box = document.getElementById("cart");
-    if(!cart.length){
-        box.innerHTML = `<div class="empty">Belum ada item. Pilih item lalu tekan <b>Tambah</b>.</div>`;
-    }else{
-        box.innerHTML = cart.map((x,i)=>`
-            <div class="line">
-                <div class="line-info">
-                    <strong>${escapeHtml(x.name)}</strong>
-                    <span>${x.qty} × ${rupiah(x.price)}</span>
-                </div>
-                <div class="line-total">${rupiah(x.qty*x.price)}</div>
-                <button class="btn-danger" onclick="removeItem(${i})">Hapus</button>
-            </div>
-        `).join("");
-    }
-    document.getElementById("grandTotal").textContent = rupiah(cart.reduce((s,x)=>s+x.qty*x.price,0));
+function inDateRange(date, from, to){
+  return (!from || date >= from) && (!to || date <= to);
 }
 
-function clearCart(){
-    cart=[];
-    document.getElementById("note").value="";
-    document.getElementById("qty").value=1;
-    renderCart();
-}
-
-function getHistory(){
-    try{return JSON.parse(localStorage.getItem(STORAGE_KEY)) || []}
-    catch(e){return []}
-}
-
-async function saveTransaction(){
-    if(!cart.length){
-        toast("Tambahkan minimal 1 item.");
-        return;
-    }
-
-    const cashier = document.getElementById("cashier").value.trim() || "Tanpa Nama";
-    updateDateValue();
-    const date = document.getElementById("date").value;
-    const group = document.getElementById("group").value || "-";
-    const note = document.getElementById("note").value.trim() || "-";
-    const total = cart.reduce((s,x)=>s+x.qty*x.price,0);
-
-    const transaction = {
-        id: Date.now(),
-        cashier,
-        date,
-        group,
-        note,
-        total,
-        items: cart.map(x=>({...x}))
-    };
-
-    // Simpan ke history TERLEBIH DAHULU.
-    const history = getHistory();
-    history.unshift(transaction);
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(history));
-
-    // Kirim transaksi yang SAMA persis dengan data history ke Discord.
-    if(DISCORD_WEBHOOK_URL && !DISCORD_WEBHOOK_URL.includes("MASUKKAN_WEBHOOK")){
-        const sent = await sendToDiscord(transaction);
-
-        if(sent){
-            toast("Pengeluaran disimpan & berhasil dikirim ke Discord.");
-        }else{
-            toast("Pengeluaran tersimpan, tetapi gagal dikirim ke Discord.");
-        }
-    }else{
-        toast("Pengeluaran berhasil disimpan.");
-    }
-
-    clearCart();
-    renderHistory();
-}
-
-async function sendToDiscord(t){
-    const itemsText = t.items.map(x =>
-        `• **${x.name}** × ${x.qty} — ${rupiah(x.qty * x.price)}`
-    ).join("\\n");
-
-    const payload = {
-        username: "Expense Calculator",
-        embeds: [{
-            title: "💸 PENGELUARAN BARU",
-            description: "Transaksi baru telah dicatat dari Expense Calculator.",
-            color: 11010048,
-            fields: [
-                { name: "👤 Nama Pencatat", value: t.cashier, inline: true },
-                { name: "🏢 Kelompok", value: t.group, inline: true },
-                { name: "📅 Tanggal", value: formatDate(t.date), inline: true },
-                { name: "📝 Keterangan", value: t.note, inline: false },
-                { name: "📦 Item", value: itemsText || "-", inline: false },
-                { name: "💰 Total Pengeluaran", value: `**${rupiah(t.total)}**`, inline: false },
-                { name: "🆔 ID Transaksi", value: String(t.id), inline: false }
-            ],
-            footer: {
-                text: "Expense Calculator • History ID " + t.id
-            },
-            timestamp: new Date().toISOString()
-        }]
-    };
-
-    try{
-        const response = await fetch(DISCORD_WEBHOOK_URL, {
-            method: "POST",
-            headers: {"Content-Type":"application/json"},
-            body: JSON.stringify(payload)
-        });
-
-        return response.ok;
-    }catch(error){
-        console.error("Discord webhook error:", error);
-        return false;
-    }
+function renderStock(){
+  const search=$("searchStock").value.toLowerCase().trim();
+  const cat=$("categoryFilter").value;
+  const from=$("dateFrom").value, to=$("dateTo").value;
+  const rows=INITIAL_STOCK.filter(i=>{
+    if(search && !i.name.toLowerCase().includes(search)) return false;
+    if(cat && i.category!==cat) return false;
+    return true;
+  }).map(i=>{
+    const t=stockTotals(i.id,from,to);
+    return `<tr>
+      <td><div class="item-name">${i.name}</div><div class="category">${i.category}</div></td>
+      <td>${fmt(i.initial)}</td>
+      <td class="amount in">+${fmt(t.incoming)}</td>
+      <td class="amount out">-${fmt(t.outgoing)}</td>
+      <td class="amount ${t.final<0?'negative':''}">${fmt(t.final)}</td>
+    </tr>`;
+  }).join("");
+  $("stockBody").innerHTML=rows || `<tr><td colspan="5" class="empty">Barang tidak ditemukan.</td></tr>`;
+  $("itemCount").textContent=`${INITIAL_STOCK.length} item`;
 }
 
 function renderHistory(){
-    const list = document.getElementById("historyList");
-    const search = document.getElementById("historySearch").value.toLowerCase().trim();
-    const history = getHistory();
+  const search=$("searchHistory").value.toLowerCase().trim();
+  const type=$("typeFilter").value;
+  const from=$("historyFrom").value, to=$("historyTo").value;
+  const list=transactions.filter(t=>{
+    const item=getItem(t.itemId);
+    if(!item) return false;
+    const hay=(item.name+" "+(t.note||"")).toLowerCase();
+    return (!search || hay.includes(search)) &&
+           (!type || t.type===type) && inDateRange(t.date,from,to);
+  }).sort((a,b)=>(b.date+a.id).localeCompare(a.date+b.id));
 
-    const filtered = history.filter(t=>{
-        const text = [
-            t.cashier,t.group,t.note,t.date,
-            ...t.items.map(x=>x.name)
-        ].join(" ").toLowerCase();
-        return text.includes(search);
-    });
-
-    if(!filtered.length){
-        list.innerHTML = `<div class="empty">Belum ada history pengeluaran.</div>`;
-    }else{
-        list.innerHTML = filtered.map(t=>`
-            <div class="history-card">
-                <div class="history-top">
-                    <div>
-                        <div class="history-name">${escapeHtml(t.cashier)}</div>
-                        <div class="history-date">${formatDate(t.date)}</div>
-                    </div>
-                    <div class="history-total">${rupiah(t.total)}</div>
-                </div>
-                <div class="history-meta">Kelompok: ${escapeHtml(t.group || "-")} · Keterangan: ${escapeHtml(t.note)} · ${t.items.reduce((s,x)=>s+x.qty,0)} item</div>
-                <div class="history-items">${t.items.map(x=>`${escapeHtml(x.name)} × ${x.qty} = ${rupiah(x.qty*x.price)}`).join("\n")}</div>
-                <div class="history-actions">
-                    <button class="btn-secondary" onclick="showDetail(${t.id})">Lihat Detail</button>
-                    <button class="btn-danger" onclick="deleteTransaction(${t.id})">Hapus</button>
-                </div>
-            </div>
-        `).join("");
-    }
-
-    const totalTransactions = history.length;
-    const totalItems = history.reduce((s,t)=>s+t.items.reduce((a,x)=>a+x.qty,0),0);
-    const totalMoney = history.reduce((s,t)=>s+t.total,0);
-
-    document.getElementById("statTransactions").textContent = totalTransactions;
-    document.getElementById("statItems").textContent = totalItems;
-    document.getElementById("statTotal").textContent = rupiah(totalMoney);
+  $("historyCount").textContent=`${list.length} transaksi`;
+  $("historyBody").innerHTML=list.length ? list.map(t=>{
+    const item=getItem(t.itemId);
+    return `<tr>
+      <td>${t.date}</td>
+      <td><strong>${item.name}</strong><div class="category">${item.category}</div></td>
+      <td><span class="badge ${t.type==="in"?"badge-in":"badge-out"}">${t.type==="in"?"PEMASUKAN":"PENGELUARAN"}</span></td>
+      <td class="amount ${t.type==="in"?"in":"out"}">${t.type==="in"?"+":"-"}${fmt(t.qty)}</td>
+      <td>${escapeHtml(t.note||"-")}</td>
+      <td><div class="actions"><button class="btn-danger" onclick="deleteTransaction('${t.id}')">Hapus</button></div></td>
+    </tr>`;
+  }).join("") : `<tr><td colspan="6" class="empty">Belum ada transaksi.</td></tr>`;
 }
 
-function showDetail(id){
-    const t = getHistory().find(x=>x.id===id);
-    if(!t) return;
-
-    document.getElementById("modalContent").innerHTML = `
-        <p><b>Pencatat:</b> ${escapeHtml(t.cashier)}</p>
-        <p><b>Tanggal:</b> ${formatDate(t.date)}</p>
-        <p><b>Kelompok:</b> ${escapeHtml(t.group || "-")}</p>
-        <p><b>Keterangan:</b> ${escapeHtml(t.note)}</p>
-        <table class="item-table">
-            <thead><tr><th>Item</th><th>Qty</th><th>Harga</th><th>Total</th></tr></thead>
-            <tbody>
-            ${t.items.map(x=>`
-                <tr>
-                    <td>${escapeHtml(x.name)}</td>
-                    <td>${x.qty}</td>
-                    <td>${rupiah(x.price)}</td>
-                    <td>${rupiah(x.qty*x.price)}</td>
-                </tr>
-            `).join("")}
-            </tbody>
-        </table>
-        <div class="total-box" style="margin-top:14px">
-            <div class="total-line"><b>TOTAL</b><b>${rupiah(t.total)}</b></div>
-        </div>
-    `;
-    document.getElementById("modal").classList.add("show");
+function escapeHtml(str){
+  return String(str).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[m]));
 }
-
-function closeModal(){
-    document.getElementById("modal").classList.remove("show");
-}
-
 function deleteTransaction(id){
-    if(!confirm("Hapus transaksi ini dari history?")) return;
-    const history = getHistory().filter(x=>x.id!==id);
-    localStorage.setItem(STORAGE_KEY,JSON.stringify(history));
-    renderHistory();
-    toast("Transaksi dihapus.");
+  if(!confirm("Hapus transaksi ini?")) return;
+  transactions=transactions.filter(t=>t.id!==id);
+  save(); renderAll();
+}
+window.deleteTransaction=deleteTransaction;
+
+function renderAll(){
+  populateItems(); renderStats(); renderStock(); renderHistory();
 }
 
-function formatDate(date){
-    if(!date) return "-";
-    return new Intl.DateTimeFormat("id-ID",{
-        day:"2-digit",month:"long",year:"numeric"
-    }).format(new Date(date+"T00:00:00"));
+function exportCSV(){
+  const rows=[["Tanggal","Barang","Kategori","Jenis","Jumlah","Keterangan"]];
+  transactions.slice().sort((a,b)=>a.date.localeCompare(b.date)).forEach(t=>{
+    const i=getItem(t.itemId);
+    rows.push([t.date,i?.name||"Unknown",i?.category||"",t.type==="in"?"Pemasukan":"Pengeluaran",t.qty,t.note||""]);
+  });
+  const csv=rows.map(r=>r.map(v=>`"${String(v).replace(/"/g,'""')}"`).join(",")).join("\n");
+  const blob=new Blob(["\ufeff"+csv],{type:"text/csv;charset=utf-8;"});
+  const url=URL.createObjectURL(blob), a=document.createElement("a");
+  a.href=url;a.download="riwayat-brankas.csv";a.click();URL.revokeObjectURL(url);
 }
 
-function escapeHtml(value){
-    return String(value).replace(/[&<>"']/g,m=>({
-        "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"
-    }[m]));
-}
+$("transactionDate").value=today();
+$("btnIn").addEventListener("click",()=>addTransaction("in"));
+$("btnOut").addEventListener("click",()=>addTransaction("out"));
+$("itemSelect").addEventListener("change",updatePreview);
+$("exportBtn").addEventListener("click",exportCSV);
 
-let toastTimer;
-function toast(message){
-    const el=document.getElementById("toast");
-    el.textContent=message;
-    el.classList.add("show");
-    clearTimeout(toastTimer);
-    toastTimer=setTimeout(()=>el.classList.remove("show"),2200);
-}
 
-document.getElementById("modal").addEventListener("click",e=>{
-    if(e.target.id==="modal") closeModal();
+["searchStock","categoryFilter","dateFrom","dateTo","searchHistory","typeFilter","historyFrom","historyTo"]
+.forEach(id=>$(id).addEventListener("input",()=>{renderStock();renderHistory();}));
+
+$("resetBtn").addEventListener("click",()=>{
+  if(!confirm("Yakin ingin menghapus SEMUA riwayat dan mengembalikan stok ke stok awal?")) return;
+  transactions=[];save();renderAll();
 });
 
-init();
+renderAll();
 </script>
 </body>
 </html>
